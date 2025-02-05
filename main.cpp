@@ -1,66 +1,70 @@
-/*******************************************************************************************
-*
-*   raylib [core] example - Keyboard input
-*
-*   Example complexity rating: [★☆☆☆] 1/4
-*
-*   Example originally created with raylib 1.0, last time updated with raylib 1.0
-*
-*   Example licensed under an unmodified zlib/libpng license, which is an OSI-certified,
-*   BSD-like license that allows static linking with closed source software
-*
-*   Copyright (c) 2014-2025 Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
+#include <raylib.h>
+#include <iostream>
+#include <sstream>
+/*
+ * Old way to compile
+ * mkdir build && cd build
+ * cmake ..
+ * make
+ *
+ * Modern way
+ * cmake -S . -B build
+ * cmake --build build
+ */
 
-#include "raylib.h"
+/*
+ * Ressourcen:
+ * - Bild: https://raw.githubusercontent.com/dominickleppich/FlowerWarsPP/master/specification/images/flowerwarspp-preview.png
+ * - Orginalrepo: https://github.com/lquenti/flowerwarspp
+ * - Lars impl: https://github.com/lquenti/eanufwpp
+ * - Musterlösung: https://github.com/dominickleppich/FlowerWarsPP
+ */
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
-int main(void)
-{
-    // Initialization
-    //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+const int WIDTH = 1280;
+const int HEIGHT = 720;
+const char TITLE[] = "Flowerwars, now faster! (Hopefully)";
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - keyboard input");
+void draw_triangles(size_t N) {
+    // compute min of height and width
+    int current_width = GetRenderWidth();
+    int current_height = GetRenderHeight();
+    int min_xy = std::min(current_width, current_height);
 
-    Vector2 ballPosition = { (float)screenWidth/2, (float)screenHeight/2 };
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
-    //--------------------------------------------------------------------------------------
-
-    // Main game loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    int width_of_single = min_xy/N; // width == height btw
+    float left_push = current_width/2 - width_of_single*N/2;
+    float top_push = current_height/2 - width_of_single*N/2;
+    //width / 2 == xmargin +  width_of_single*N/2
+    // draw corners from bottom to top
+    for (int x=0; x<N+1; x++)
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        if (IsKeyDown(KEY_RIGHT)) ballPosition.x += 2.0f;
-        if (IsKeyDown(KEY_LEFT)) ballPosition.x -= 2.0f;
-        if (IsKeyDown(KEY_UP)) ballPosition.y -= 2.0f;
-        if (IsKeyDown(KEY_DOWN)) ballPosition.y += 2.0f;
-        //----------------------------------------------------------------------------------
+        for (int y=0; y<N-x+1; y++)
+        {
+            float pos_x = left_push+y*width_of_single/2.0f+x*width_of_single;
+            float pos_y = top_push+(N-y)*width_of_single;
+            Vector2 center = {pos_x, pos_y};
+            DrawCircleV(center, 10, RED);
+            std::stringstream ss;
+            ss << x << "," << y;
+            DrawText(ss.str().c_str(),  pos_x, pos_y, 20, BLACK);
+        }
+    }
+}
 
+int main() {
+    // https://www.raylib.com/examples/core/loader.html?name=core_window_flags
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    InitWindow(WIDTH, HEIGHT, TITLE);
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose()) {
         // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
-
             ClearBackground(RAYWHITE);
-
-            DrawText("move the ball with arrow keys", 10, 10, 20, DARKGRAY);
-
-            DrawCircleV(ballPosition, 50, MAROON);
-
+            draw_triangles(6);
         EndDrawing();
-        //----------------------------------------------------------------------------------
     }
 
-    // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
-
+    CloseWindow();
     return 0;
 }

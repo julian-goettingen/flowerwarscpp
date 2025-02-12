@@ -2,6 +2,20 @@
 cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
 project(flowerwarscpp)
 
+
+# Set default build type to Release if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+include_directories(include)
+add_library(indexing src/indexing.cpp)
+target_include_directories(indexing PUBLIC src)
+
+
+# Print build type
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -25,7 +39,12 @@ endif()
 
 # Our Project
 
-add_executable(${PROJECT_NAME} main.cpp)
+
+# Add custom flags if needed
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
+add_executable(${PROJECT_NAME} src/main.cpp src/indexing.cpp)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <iostream>
 #include <sstream>
+
+#include "indexing.h"
 /*
  * Old way to compile
  * mkdir build && cd build
@@ -36,9 +38,9 @@ void draw_triangles(size_t N) {
     float top_push = current_height/2 - width_of_single*N/2;
     //width / 2 == xmargin +  width_of_single*N/2
     // draw corners from bottom to top
-    for (int x=0; x<N+1; x++)
+    for (size_t x=0; x<N+1; x++)
     {
-        for (int y=0; y<N-x+1; y++)
+        for (size_t y=0; y<N-x+1; y++)
         {
             float pos_x = left_push+y*width_of_single/2.0f+x*width_of_single;
             float pos_y = top_push+(N-y)*width_of_single;
@@ -51,7 +53,13 @@ void draw_triangles(size_t N) {
     }
 }
 
-int main() {
+#include <iostream>
+#include <stdint.h>
+
+
+int main()
+{
+ 
     // https://www.raylib.com/examples/core/loader.html?name=core_window_flags
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(WIDTH, HEIGHT, TITLE);
